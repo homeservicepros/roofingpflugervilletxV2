@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Performance optimization
+Sitemap: https://www.jncroofing.com/sitemap.xml
+
+# Block common bot traps
+Disallow: /cgi-bin/
+Disallow: /wp-admin/
+Disallow: /admin/
+Disallow: /*.php$
