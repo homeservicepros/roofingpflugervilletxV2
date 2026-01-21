@@ -3,6 +3,7 @@ Allow: /
 
 # Performance optimization
 Sitemap: https://www.jncroofing.com/sitemap.xml
+Sitemap: https://www.jncroofing.com/sitemap-index.xml
 
 # Block common bot traps
 Disallow: /cgi-bin/
