@@ -117,6 +117,22 @@
   .prose-roof tr:nth-child(even) td { @apply bg-ink-50; }
   .prose-roof td:last-child { @apply font-bold text-brand-700; }
 
+  /* Desktop dropdown panels. Open instantly; close after a short grace period so a diagonal
+     mouse path from the link to a menu item never drops the menu. */
+  .mega {
+    visibility: hidden; opacity: 0;
+    transition: opacity .18s ease .28s, visibility 0s linear .46s;
+  }
+  .group:hover > .mega,
+  .group:focus-within > .mega {
+    visibility: visible; opacity: 1;
+    transition: opacity .12s ease, visibility 0s;
+  }
+  /* moving from one menu straight to another: close the first one immediately */
+  nav:has(.group:hover) .group:not(:hover):not(:focus-within) > .mega {
+    visibility: hidden; opacity: 0; transition: none;
+  }
+
   /* Tiny scroll-reveal; content is fully visible without JS */
   .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
   .js .reveal.in { opacity: 1; transform: none; }

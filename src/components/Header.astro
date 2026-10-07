@@ -30,14 +30,14 @@ const catIcon: Record<string, string> = { Roofing: 'house', Gutters: 'cloud-rain
   <div class="wrap relative flex h-[4.5rem] items-center justify-between gap-4">
     <Logo />
 
-    <nav class="hidden items-center lg:flex" aria-label="Primary">
+    <nav class="hidden h-full items-center lg:flex" aria-label="Primary">
       <a href="/" class={nav} aria-current={active('/') ? 'page' : undefined}>Home</a>
 
-      <div class="group">
+      <div class="group flex h-full items-center">
         <a href="/#services" class={nav} aria-current={active('/services') ? 'page' : undefined} aria-haspopup="true">
           Services <Icon name="chevron-down" class="size-4 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
         </a>
-        <div class="invisible absolute inset-x-0 top-full pt-2 opacity-0 transition duration-200 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+        <div class="mega absolute inset-x-0 top-full pt-2">
           <div class="grid grid-cols-[1fr_1fr_1fr_1fr_17rem] gap-x-6 rounded-2xl bg-white p-6 shadow-lift ring-1 ring-ink-100">
             {categories.map((c) => (
               <div>
@@ -67,11 +67,11 @@ const catIcon: Record<string, string> = { Roofing: 'house', Gutters: 'cloud-rain
         </div>
       </div>
 
-      <div class="group">
+      <div class="group flex h-full items-center">
         <a href="/#service-areas" class={nav} aria-current={active('/service-area') ? 'page' : undefined} aria-haspopup="true">
           Service Areas <Icon name="chevron-down" class="size-4 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
         </a>
-        <div class="invisible absolute inset-x-0 top-full pt-2 opacity-0 transition duration-200 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+        <div class="mega absolute inset-x-0 top-full pt-2">
           <div class="rounded-2xl bg-white p-6 shadow-lift ring-1 ring-ink-100">
             <p class="mb-3 flex items-center gap-2 border-b border-ink-100 pb-2 font-display text-lg font-bold uppercase tracking-wide text-ink-900">
               <Icon name="map-pin" class="size-4 text-brand-600" />Pflugerville, TX 78660 neighborhoods
