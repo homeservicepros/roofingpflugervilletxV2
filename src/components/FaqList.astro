@@ -1,0 +1,33 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../config/site';
+import { stripEmoji } from '../lib/text';
+interface Props { heading: string; items: { q: string; a: string }[]; closing?: { text: string; button: string } }
+const { heading, items, closing } = Astro.props;
+---
+<section class="section bg-ink-50" aria-labelledby="faq-heading">
+  <div class="wrap max-w-4xl">
+    <div class="text-center reveal">
+      <p class="eyebrow"><Icon name="circle-help" class="size-4" />FAQ</p>
+      <h2 id="faq-heading" class="section-title mt-5">{heading}</h2>
+    </div>
+    <div class="mt-10 space-y-4">
+      {items.map((f, i) => (
+        <details class="group card overflow-hidden transition-shadow open:shadow-lift reveal" open={i === 0}>
+          <summary class="flex cursor-pointer list-none items-start gap-4 p-5 sm:p-6 [&::-webkit-details-marker]:hidden">
+            <span class="mt-0.5 grid size-9 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700 transition-colors group-open:bg-brand-600 group-open:text-white"><Icon name="circle-help" class="size-5" /></span>
+            <h3 class="flex-1 text-lg font-bold leading-snug text-ink-900">{f.q}</h3>
+            <Icon name="plus" class="mt-1.5 size-5 text-ink-400 transition-transform duration-200 group-open:rotate-45" />
+          </summary>
+          <div class="border-t border-ink-100 px-5 pb-6 pl-5 pt-4 sm:pl-[4.75rem] sm:pr-6"><p class="leading-relaxed text-ink-600">{f.a}</p></div>
+        </details>
+      ))}
+    </div>
+    {closing && (
+      <div class="mt-10 text-center reveal">
+        <p class="text-lg text-ink-600">{closing.text}</p>
+        <a href={site.phone.href} class="btn btn-primary btn-lg mt-5"><Icon name="phone" class="size-5" />{stripEmoji(closing.button)}</a>
+      </div>
+    )}
+  </div>
+</section>

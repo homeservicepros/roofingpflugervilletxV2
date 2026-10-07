@@ -1,0 +1,137 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import Photo from './Photo.astro';
+import { site } from '../config/site';
+import { services, categories, servicesIn } from '../data/services';
+import { areas } from '../data/areas';
+import { photos } from '../lib/images';
+
+interface Props { currentPath?: string }
+const { currentPath = '/' } = Astro.props;
+const active = (p: string) => (p === '/' ? currentPath === '/' : currentPath.startsWith(p));
+const nav = 'relative inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-[0.95rem] font-semibold text-ink-700 transition-colors hover:text-brand-700 aria-[current=page]:text-brand-700';
+const catIcon: Record<string, string> = { Roofing: 'house', Gutters: 'cloud-rain', Specialty: 'sparkles', Inspections: 'clipboard-check' };
+---
+<div class="hidden bg-ink-950 text-[0.82rem] text-ink-300 md:block">
+  <div class="wrap flex h-10 items-center justify-between">
+    <p class="flex items-center gap-5">
+      <span class="inline-flex items-center gap-1.5"><Icon name="shield-check" class="size-4 text-flame-400" />{site.tagline}</span>
+      <span class="hidden items-center gap-1.5 lg:inline-flex"><Icon name="clock" class="size-4 text-flame-400" />24/7 Emergency Service</span>
+    </p>
+    <p class="flex items-center gap-5">
+      <a href={`mailto:${site.email}`} class="inline-flex items-center gap-1.5 transition-colors hover:text-white"><Icon name="mail" class="size-4" />{site.email}</a>
+      <a href={site.phone.href} class="inline-flex items-center gap-1.5 font-semibold text-white"><Icon name="phone" class="size-4 text-flame-400" /><span class="font-normal text-ink-300">Call for Free Estimate</span> {site.phone.display}</a>
+    </p>
+  </div>
+</div>
+
+<header class="sticky top-0 z-50 border-b border-ink-100 bg-white/95 backdrop-blur-md">
+  <div class="wrap relative flex h-[4.5rem] items-center justify-between gap-4">
+    <Logo />
+
+    <nav class="hidden items-center lg:flex" aria-label="Primary">
+      <a href="/" class={nav} aria-current={active('/') ? 'page' : undefined}>Home</a>
+
+      <div class="group">
+        <a href="/#services" class={nav} aria-current={active('/services') ? 'page' : undefined} aria-haspopup="true">
+          Services <Icon name="chevron-down" class="size-4 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
+        </a>
+        <div class="invisible absolute inset-x-0 top-full pt-2 opacity-0 transition duration-200 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+          <div class="grid grid-cols-[1fr_1fr_1fr_1fr_17rem] gap-x-6 rounded-2xl bg-white p-6 shadow-lift ring-1 ring-ink-100">
+            {categories.map((c) => (
+              <div>
+                <p class="mb-3 flex items-center gap-2 border-b border-ink-100 pb-2 font-display text-lg font-bold uppercase tracking-wide text-ink-900">
+                  <Icon name={catIcon[c]} class="size-4 text-brand-600" />{c}
+                </p>
+                <ul class="space-y-0.5">
+                  {servicesIn(c).map((s) => (
+                    <li>
+                      <a href={s.path} title={s.name} class="flex items-start gap-2 rounded-lg px-2 py-1.5 text-[0.88rem] font-medium leading-snug text-ink-600 transition-colors hover:bg-brand-50 hover:text-brand-700">
+                        <Icon name={s.icon} class="mt-0.5 size-4 text-ink-400" />{s.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+            <div class="relative overflow-hidden rounded-xl bg-ink-900 text-white">
+              <Photo src={photos.van2.src} alt="" class="absolute inset-0 size-full object-cover opacity-45" widths={[480]} sizes="272px" />
+              <div class="relative flex h-full flex-col justify-end bg-gradient-to-t from-ink-950/90 to-transparent p-4">
+                <p class="font-display text-2xl font-bold uppercase leading-none">Roof emergency?</p>
+                <p class="mt-1 text-sm text-ink-200">24/7 Emergency Service</p>
+                <a href={site.phone.href} class="btn btn-primary mt-3 min-h-11 px-4 py-2 text-[0.95rem]"><Icon name="phone" class="size-4" />{site.phone.display}</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="group">
+        <a href="/#service-areas" class={nav} aria-current={active('/service-area') ? 'page' : undefined} aria-haspopup="true">
+          Service Areas <Icon name="chevron-down" class="size-4 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
+        </a>
+        <div class="invisible absolute inset-x-0 top-full pt-2 opacity-0 transition duration-200 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+          <div class="rounded-2xl bg-white p-6 shadow-lift ring-1 ring-ink-100">
+            <p class="mb-3 flex items-center gap-2 border-b border-ink-100 pb-2 font-display text-lg font-bold uppercase tracking-wide text-ink-900">
+              <Icon name="map-pin" class="size-4 text-brand-600" />Pflugerville, TX 78660 neighborhoods
+            </p>
+            <ul class="grid grid-cols-5 gap-x-4 gap-y-0.5">
+              {areas.map((a) => (
+                <li><a href={a.path} class="block rounded-lg px-2 py-1.5 text-[0.88rem] font-medium text-ink-600 transition-colors hover:bg-brand-50 hover:text-brand-700">{a.name}</a></li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <a href="/#about" class={nav}>About</a>
+      <a href="/blog/" class={nav} aria-current={active('/blog') ? 'page' : undefined}>Blog</a>
+      <a href="#states" class={nav}>Nationwide</a>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a href={site.phone.href} class="btn btn-primary hidden min-h-11 px-4 py-2 sm:inline-flex lg:px-5" aria-label={`Call ${site.phone.display}`}>
+        <Icon name="phone" class="size-[1.1rem]" /><span>{site.phone.display}</span>
+      </a>
+      <button id="menu-btn" type="button" class="group inline-flex size-11 items-center justify-center rounded-xl text-ink-900 ring-1 ring-ink-200 transition hover:bg-ink-50 lg:hidden" aria-expanded="false" aria-controls="mobile-menu" aria-label="Toggle menu">
+        <Icon name="menu" class="size-6 group-aria-expanded:hidden" /><Icon name="x" class="hidden size-6 group-aria-expanded:block" />
+      </button>
+    </div>
+
+    <div id="mobile-menu" hidden class="absolute inset-x-0 top-full max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-ink-100 bg-white shadow-lift lg:hidden">
+      <nav class="wrap space-y-1 py-4" aria-label="Mobile">
+        <a href="/" class="block rounded-lg px-3 py-3 text-lg font-semibold text-ink-900">Home</a>
+        <details class="group rounded-lg">
+          <summary class="flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-3 text-lg font-semibold text-ink-900 [&::-webkit-details-marker]:hidden">
+            Services <Icon name="chevron-down" class="size-5 transition-transform group-open:rotate-180" />
+          </summary>
+          <div class="space-y-4 px-3 pb-3 pt-1">
+            {categories.map((c) => (
+              <div>
+                <p class="mb-1 text-xs font-bold uppercase tracking-[0.14em] text-brand-700">{c}</p>
+                <ul>
+                  {servicesIn(c).map((s) => (
+                    <li><a href={s.path} class="block rounded-lg px-2 py-2 text-[0.95rem] font-medium text-ink-600">{s.name}</a></li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </details>
+        <details class="group rounded-lg">
+          <summary class="flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-3 text-lg font-semibold text-ink-900 [&::-webkit-details-marker]:hidden">
+            Service Areas <Icon name="chevron-down" class="size-5 transition-transform group-open:rotate-180" />
+          </summary>
+          <ul class="grid grid-cols-2 gap-x-2 px-3 pb-3">
+            {areas.map((a) => (<li><a href={a.path} class="block rounded-lg px-2 py-2 text-[0.95rem] font-medium text-ink-600">{a.name}</a></li>))}
+          </ul>
+        </details>
+        <a href="/#about" class="block rounded-lg px-3 py-3 text-lg font-semibold text-ink-900">About</a>
+        <a href="/blog/" class="block rounded-lg px-3 py-3 text-lg font-semibold text-ink-900">Blog</a>
+        <a href="#states" class="block rounded-lg px-3 py-3 text-lg font-semibold text-ink-900">Nationwide</a>
+        <a href={site.phone.href} class="btn btn-primary mt-3 w-full"><Icon name="phone" class="size-5" />Call {site.phone.display}</a>
+      </nav>
+    </div>
+  </div>
+</header>

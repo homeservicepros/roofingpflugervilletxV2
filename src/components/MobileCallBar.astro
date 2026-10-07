@@ -1,0 +1,12 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../config/site';
+---
+<div class="fixed inset-x-0 bottom-0 z-40 border-t border-ink-200 bg-white/95 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_24px_-12px_rgb(12_14_18/0.35)] backdrop-blur md:hidden">
+  <div class="mx-auto flex max-w-lg gap-2">
+    <a href={site.phone.href} class="btn btn-primary min-h-12 flex-1 whitespace-nowrap px-4 py-2.5 text-[0.95rem]" aria-label={`Call ${site.phone.display}`}>
+      <Icon name="phone" class="size-5" />Call {site.phone.display}
+    </a>
+    <a href="/#contact" class="btn btn-outline min-h-12 whitespace-nowrap px-3.5 py-2.5 text-[0.9rem]">Free Estimate</a>
+  </div>
+</div>

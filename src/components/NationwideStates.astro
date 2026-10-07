@@ -1,0 +1,108 @@
+---
+import Icon from './Icon.astro';
+import { site, stateUrl, mapEmbed } from '../config/site';
+import { states, regions, statesByRegion } from '../data/states';
+import shared from '../data/legacy/shared.json';
+
+const n = shared.nationwide;
+const whyIcons = ['shield-check', 'clock', 'award'];
+const total = states.length;
+---
+<section id="states" class="relative overflow-hidden bg-sand-50 section">
+  <div class="pointer-events-none absolute -right-40 -top-40 size-[34rem] rounded-full bg-brand-100/60 blur-3xl"></div>
+  <div class="wrap relative">
+    <div class="mx-auto max-w-3xl text-center reveal">
+      <p class="eyebrow"><Icon name="globe" class="size-4" />{n.badge}</p>
+      <h2 class="section-title mt-5">{n.h2}</h2>
+      <p class="section-lead mx-auto">{n.text}</p>
+    </div>
+
+    <div class="mt-12 grid items-stretch gap-8 lg:grid-cols-2">
+      <div class="overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-ink-100 reveal">
+        <iframe
+          class="h-80 w-full sm:h-[26rem] lg:h-full lg:min-h-[26rem]" style="border:0"
+          src={mapEmbed('United States', 4)} title="Map of the United States — nationwide roofing coverage"
+          loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+      <div class="card p-6 sm:p-8 reveal">
+        <h3 class="font-display text-3xl font-bold uppercase leading-none text-ink-900">{n.whyTitle}</h3>
+        <ul class="mt-6 space-y-5">
+          {n.why.map((w, i) => (
+            <li class="flex gap-4">
+              <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-brand-600 text-white shadow-brand"><Icon name={whyIcons[i]} class="size-6" /></span>
+              <div>
+                <h4 class="text-lg font-bold text-ink-900">{w.title}</h4>
+                <p class="mt-1 leading-relaxed text-ink-500">{w.text}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <a href={site.phone.href} class="btn btn-primary mt-7 w-full sm:w-auto"><Icon name="phone" class="size-5" />Call {site.phone.display}</a>
+      </div>
+    </div>
+
+    <div class="mt-16">
+      <div class="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-end">
+        <div>
+          <h3 class="section-title !text-4xl sm:!text-5xl">{n.statesTitle}</h3>
+          <p class="mt-2 text-ink-500">{total} locations — every state, plus DC and Puerto Rico. Each link opens that state’s local {site.name} site.</p>
+        </div>
+        <label class="relative block w-full sm:w-72">
+          <span class="sr-only">Find your state</span>
+          <Icon name="search" class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-ink-400" />
+          <input id="state-filter" type="search" autocomplete="off" placeholder="Find your state…" class="h-12 w-full rounded-xl border-0 bg-white pl-12 pr-4 text-base text-ink-900 shadow-card ring-1 ring-ink-200 placeholder:text-ink-400 focus:ring-2 focus:ring-brand-600" />
+        </label>
+      </div>
+
+      <div id="state-groups" class="mt-8 space-y-9">
+        {regions.map((r) => (
+          <div data-region>
+            <h4 class="mb-3 flex items-center gap-3 font-display text-xl font-bold uppercase tracking-[0.12em] text-ink-500">
+              {r}<span class="h-px flex-1 bg-ink-200"></span>
+            </h4>
+            <ul class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              {statesByRegion(r).map((s) => (
+                <li data-state data-name={`${s.name} ${s.code}`.toLowerCase()}>
+                  <a
+                    href={stateUrl(s.code)} title={`Roofing contractor in ${s.name}`}
+                    class:list={[
+                      'group flex min-h-14 items-center gap-3 rounded-xl bg-white px-3.5 py-2.5 shadow-card ring-1 ring-ink-100 transition duration-200 hover:-translate-y-0.5 hover:shadow-lift hover:ring-brand-300',
+                      s.code === 'tx' && 'ring-2 ring-brand-500',
+                    ]}
+                  >
+                    <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-ink-900 font-display text-sm font-bold uppercase tracking-wider text-white transition-colors group-hover:bg-brand-600">{s.code}</span>
+                    <span class="min-w-0 flex-1 text-[0.95rem] font-semibold leading-tight text-ink-900">{s.name}</span>
+                    <Icon name="arrow-up-right" class="size-4 text-ink-300 transition-colors group-hover:text-brand-600" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+        <p id="state-empty" hidden class="rounded-xl bg-white p-6 text-center font-semibold text-ink-500 ring-1 ring-ink-200">No state matches that search.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    var input = document.getElementById('state-filter');
+    if (!input) return;
+    var groups = document.querySelectorAll('#state-groups [data-region]');
+    var empty = document.getElementById('state-empty');
+    input.addEventListener('input', function () {
+      var q = input.value.trim().toLowerCase(), shown = 0;
+      groups.forEach(function (g) {
+        var any = 0;
+        g.querySelectorAll('[data-state]').forEach(function (li) {
+          var hit = !q || li.getAttribute('data-name').indexOf(q) !== -1;
+          li.hidden = !hit; if (hit) any++;
+        });
+        g.hidden = !any; shown += any;
+      });
+      empty.hidden = shown > 0;
+    });
+  })();
+</script>

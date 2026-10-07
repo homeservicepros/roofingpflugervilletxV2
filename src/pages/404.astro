@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../config/site';
+import { services } from '../data/services';
+---
+<BaseLayout title={`Page not found | ${site.name}`} description="The page you were looking for could not be found." path="/404" noindex>
+  <section class="section bg-ink-50">
+    <div class="wrap max-w-3xl text-center">
+      <p class="font-display text-8xl font-extrabold text-brand-600">404</p>
+      <h1 class="h-display mt-2 text-5xl text-ink-900">Page not found</h1>
+      <p class="mt-4 text-lg text-ink-500">That page moved or doesn’t exist. Try one of our most-requested services, or call us and we’ll help right away.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a href="/" class="btn btn-outline btn-lg">Back to home</a>
+        <a href={site.phone.href} class="btn btn-primary btn-lg"><Icon name="phone" class="size-5" />Call {site.phone.display}</a>
+      </div>
+      <ul class="mt-10 grid gap-2 text-left sm:grid-cols-2">
+        {services.slice(0, 6).map((s) => (<li><a href={s.path} class="card flex items-center gap-3 px-4 py-3 font-semibold text-ink-800 transition hover:text-brand-700"><Icon name={s.icon} class="size-5 text-brand-600" />{s.name}</a></li>))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

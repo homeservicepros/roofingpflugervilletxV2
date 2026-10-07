@@ -1,0 +1,43 @@
+---
+import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import { img } from '../lib/images';
+import { site } from '../config/site';
+import { stripEmoji } from '../lib/text';
+
+interface Props {
+  h1: string;
+  subtitle?: string;
+  image?: ImageMetadata;
+  imageAlt?: string;
+  crumbs: { name: string; path?: string }[];
+  eyebrow?: string;
+  eyebrowIcon?: string;
+  ctaLabel?: string;
+  meta?: string[];
+}
+const { h1, subtitle, image, imageAlt = '', crumbs, eyebrow, eyebrowIcon = 'map-pin', ctaLabel = `Call ${site.phone.display} Now`, meta = [] } = Astro.props;
+---
+<section class="relative isolate overflow-hidden bg-ink-950 text-white">
+  <Photo src={img.headerBg} alt="" eager priority quality={60} class="absolute inset-0 -z-10 size-full object-cover" widths={[640, 1280]} sizes="100vw" />
+  <div class="absolute inset-0 -z-10 bg-gradient-to-r from-ink-950/85 via-ink-950/55 to-ink-950/20"></div>
+  <div class="wrap grid items-center gap-10 py-12 sm:py-16 lg:grid-cols-[1.15fr_0.85fr] lg:py-20">
+    <div>
+      <Breadcrumbs crumbs={crumbs} dark />
+      {eyebrow && <p class="eyebrow eyebrow-dark mt-6"><Icon name={eyebrowIcon} class="size-4" />{eyebrow}</p>}
+      <h1 class:list={['h-display text-[2.4rem] text-white text-shadow-soft sm:text-6xl lg:text-[4.1rem]', eyebrow ? 'mt-4' : 'mt-6']}>{h1}</h1>
+      {subtitle && <p class="mt-5 max-w-2xl text-lg leading-relaxed text-ink-100 sm:text-xl">{subtitle}</p>}
+      <div class="mt-8 flex flex-wrap items-center gap-4">
+        <a href={site.phone.href} class="btn btn-primary btn-lg"><Icon name="phone" class="size-5" />{stripEmoji(ctaLabel)}</a>
+        {meta.map((m) => (<span class="inline-flex items-center gap-2 text-[0.95rem] font-semibold text-ink-100"><Icon name="badge-check" class="size-5 text-flame-400" />{m}</span>))}
+      </div>
+    </div>
+    {image && (
+      <div class="relative mx-auto w-full max-w-md lg:max-w-none">
+        <div class="absolute -inset-3 -rotate-2 rounded-[1.75rem] bg-brand-600/70"></div>
+        <Photo src={image} alt={imageAlt} eager priority class="relative aspect-[4/3] w-full rotate-1 rounded-[1.5rem] object-cover shadow-lift ring-4 ring-white/90" sizes="(min-width: 1024px) 480px, 100vw" widths={[480, 768, 1100]} />
+      </div>
+    )}
+  </div>
+</section>

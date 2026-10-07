@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Photo from '../../components/Photo.astro';
+import Icon from '../../components/Icon.astro';
+import NationwideStates from '../../components/NationwideStates.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import { posts, blogIndex } from '../../data/blog';
+import shared from '../../data/legacy/shared.json';
+import { site, abs } from '../../config/site';
+import { graph, businessNode, websiteNode, webPageNode, breadcrumbNode, ids } from '../../lib/schema';
+
+const path = '/blog/';
+const schema = graph(
+  businessNode(),
+  websiteNode(),
+  webPageNode({ path, name: blogIndex.title, description: blogIndex.description, type: 'CollectionPage', breadcrumb: true }),
+  breadcrumbNode(path, [{ name: 'Home', path: '/' }, { name: 'Blog', path }]),
+  {
+    '@type': 'Blog',
+    '@id': `${abs(path)}#blog`,
+    name: blogIndex.h1,
+    description: blogIndex.description,
+    url: abs(path),
+    publisher: { '@id': ids.business },
+    blogPost: posts.map((p) => ({ '@type': 'BlogPosting', '@id': `${abs(p.path)}#article`, headline: p.h1, url: abs(p.path), datePublished: p.isoDate })),
+  },
+);
+---
+<BaseLayout title={blogIndex.title} description={blogIndex.description} path={path} schema={schema} footerTagline={shared.footerTaglineBlog}>
+  <PageHero h1={blogIndex.h1} subtitle={blogIndex.intro} crumbs={[{ name: 'Home', path: '/' }, { name: 'Blog' }]} eyebrow="Blog" eyebrowIcon="newspaper" ctaLabel={`Call ${site.phone.display}`} />
+
+  <section class="section bg-ink-50">
+    <div class="wrap">
+      <ul class="grid gap-7 md:grid-cols-2">
+        {posts.map((p, i) => (
+          <li class="reveal">
+            <article class="card group flex h-full flex-col overflow-hidden transition duration-300 hover:-translate-y-1 hover:shadow-lift">
+              <a href={p.path} tabindex="-1" aria-hidden="true" class="block overflow-hidden">
+                <Photo src={p.image} alt="" class="aspect-[16/10] w-full object-cover transition-transform duration-500 group-hover:scale-105" widths={[480, 768]} sizes="(min-width: 1024px) 560px, (min-width: 768px) 50vw, 100vw" eager={i < 2} />
+              </a>
+              <div class="flex flex-1 flex-col p-6">
+                <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.82rem] font-semibold text-ink-500">
+                  <span class="inline-flex items-center gap-1.5"><Icon name="user-round" class="size-4 text-brand-600" />{p.author}</span>
+                  <span class="inline-flex items-center gap-1.5"><Icon name="calendar-days" class="size-4 text-brand-600" /><time datetime={p.isoDate}>{p.date}</time></span>
+                </p>
+                <h2 class="mt-3 text-xl font-bold leading-snug text-ink-900"><a href={p.path} class="transition-colors hover:text-brand-700">{p.indexTitle}</a></h2>
+                <p class="mt-3 flex-1 leading-relaxed text-ink-600">{p.excerpt}</p>
+                <a href={p.path} class="mt-5 inline-flex items-center gap-2 font-bold text-brand-700 transition-colors hover:text-brand-800">{p.readMore}</a>
+              </div>
+            </article>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <NationwideStates />
+  <FinalCta title={blogIndex.cta.title} text={blogIndex.cta.text} button={blogIndex.cta.button} />
+</BaseLayout>

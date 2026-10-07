@@ -1,0 +1,47 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../config/site';
+interface Props {
+  title: string;
+  subtitle: string;
+  iframe: string;
+  /** legacy contact card lines: [name, serving, (zip)?, hoursLabel, hoursValue] */
+  contact: string[];
+  mapTitle?: string;
+  tone?: 'white' | 'gray';
+}
+const { title, subtitle, iframe, contact, mapTitle = title, tone = 'gray' } = Astro.props;
+const [name, serving] = contact;
+const zip = contact.length >= 5 ? contact[2] : null;
+const hoursLabel = contact[contact.length - 2];
+const hoursValue = contact[contact.length - 1];
+---
+<section class:list={['section', tone === 'gray' ? 'bg-ink-50' : 'bg-white']}>
+  <div class="wrap">
+    <div class="mx-auto max-w-3xl text-center reveal">
+      <h2 class="section-title">{title}</h2>
+      <p class="section-lead mx-auto">{subtitle}</p>
+    </div>
+    <div class="mt-12 grid gap-8 lg:grid-cols-3">
+      <div class="overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-ink-100 lg:col-span-2 reveal">
+        <iframe class="h-80 w-full sm:h-[26rem] lg:h-full lg:min-h-[26rem]" style="border:0" src={iframe} title={mapTitle} loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+      <div class="space-y-6 reveal">
+        <div class="card p-6">
+          <h3 class="font-display text-2xl font-bold uppercase leading-none text-ink-900">Contact Information</h3>
+          <ul class="mt-5 space-y-4 text-[0.97rem]">
+            <li class="flex items-center gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-lg bg-brand-600 text-white"><Icon name="phone" class="size-5" /></span><a href={site.phone.href} class="text-lg font-bold text-ink-900 hover:text-brand-700">{site.phone.display}</a></li>
+            <li class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-lg bg-ink-100 text-ink-700"><Icon name="map-pin" class="size-5" /></span>
+              <div><p class="font-semibold text-ink-900">{name}</p><p class="text-ink-500">{serving}</p>{zip && <p class="text-sm text-ink-400">{zip}</p>}<address class="mt-1 text-sm not-italic text-ink-500">{site.address.full}</address></div>
+            </li>
+            <li class="flex items-center gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-lg bg-ink-100 text-ink-700"><Icon name="mail" class="size-5" /></span><a href={`mailto:${site.email}`} class="break-all font-semibold text-ink-900 hover:text-brand-700">{site.email}</a></li>
+            <li class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-lg bg-ink-100 text-ink-700"><Icon name="clock" class="size-5" /></span>
+              <div><p class="font-semibold text-ink-900">{hoursLabel}</p><p class="text-ink-500">{hoursValue}</p></div>
+            </li>
+          </ul>
+        </div>
+        <slot />
+      </div>
+    </div>
+  </div>
+</section>

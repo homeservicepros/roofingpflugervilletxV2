@@ -1,0 +1,20 @@
+---
+import { Image } from 'astro:assets';
+import { img } from '../lib/images';
+import { site } from '../config/site';
+interface Props { class?: string; dark?: boolean; size?: 'md' | 'lg' }
+const { class: cls, dark = false, size = 'md' } = Astro.props;
+---
+<a href="/" class:list={['group inline-flex items-center gap-3', cls]} aria-label={`${site.name} — home`}>
+  <Image
+    src={img.shield} alt="" width={size === 'lg' ? 128 : 96} height={size === 'lg' ? 128 : 96}
+    class:list={[size === 'lg' ? 'size-16' : 'size-11 sm:size-12', 'shrink-0 transition-transform duration-300 group-hover:scale-105']}
+    format="webp" quality={90} loading="eager" decoding="async"
+  />
+  <span class="flex flex-col leading-none">
+    <span class:list={['font-display font-extrabold uppercase tracking-[0.01em]', size === 'lg' ? 'text-4xl' : 'text-[1.65rem] sm:text-[1.9rem]', dark ? 'text-white' : 'text-ink-900']}>Pflugerville</span>
+    <span class="mt-1 flex items-center gap-2 font-display text-[0.8rem] font-bold uppercase tracking-[0.28em] text-brand-600 sm:text-[0.88rem]">
+      <span class:list={['h-px w-3', dark ? 'bg-white/40' : 'bg-ink-300']}></span>Roof Experts<span class:list={['h-px w-3', dark ? 'bg-white/40' : 'bg-ink-300']}></span>
+    </span>
+  </span>
+</a>

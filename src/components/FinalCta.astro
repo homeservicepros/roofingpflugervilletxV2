@@ -1,0 +1,26 @@
+---
+import Icon from './Icon.astro';
+import Photo from './Photo.astro';
+import { img } from '../lib/images';
+import { site } from '../config/site';
+interface Props { title: string; text: string; button?: string; image?: boolean }
+const { title, text, button, image = true } = Astro.props;
+---
+<section class="relative isolate overflow-hidden bg-brand-700 text-white">
+  <div class="absolute inset-0 -z-10 bg-[radial-gradient(60rem_30rem_at_90%_-20%,rgb(240_122_11/0.55),transparent),linear-gradient(110deg,#8f0f21,#d3122a_55%,#b00e23)]"></div>
+  <div class="wrap grid items-center gap-10 py-14 sm:py-16 lg:grid-cols-[1.4fr_0.6fr]">
+    <div class="reveal">
+      <h2 class="h-display text-4xl sm:text-5xl lg:text-[3.4rem]">{title}</h2>
+      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-white/90">{text}</p>
+      <div class="mt-8 flex flex-wrap items-center gap-4">
+        <a href={site.phone.href} class="btn btn-light btn-lg"><Icon name="phone" class="size-5 text-brand-600" />{button ?? `Call ${site.phone.display}`}</a>
+        <a href={`mailto:${site.email}`} class="btn btn-outline-light btn-lg"><Icon name="mail" class="size-5" />Email Us</a>
+      </div>
+    </div>
+    {image && (
+      <div class="hidden justify-self-end lg:block reveal">
+        <Photo src={img.handshake} alt="Pflugerville Roof Experts technician shaking hands with a homeowner" class="size-64 rotate-2 rounded-[1.5rem] object-cover shadow-lift ring-4 ring-white/90" widths={[480, 768]} sizes="256px" />
+      </div>
+    )}
+  </div>
+</section>

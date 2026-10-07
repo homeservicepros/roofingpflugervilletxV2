@@ -1,0 +1,30 @@
+{
+  "name": "pflugerville-roof-experts",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pflugerville Roof Experts \u2014 Astro static site for Cloudflare Pages",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "extract": "python3 -I scripts/extract-legacy.py",
+    "brand-assets": "node scripts/make-brand-assets.mjs",
+    "verify": "node scripts/verify-build.mjs",
+    "verify:parity": "python3 -I scripts/verify-parity.py",
+    "preview:pages": "node scripts/preview-pages.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource/barlow-condensed": "^5.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.6",
+    "lucide-static": "^1.52.0",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.3.3"
+  }
+}

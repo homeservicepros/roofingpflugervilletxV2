@@ -1,0 +1,34 @@
+---
+import { Image } from 'astro:assets';
+/**
+ * Responsive, lazily-decoded WebP derived from the 100%-quality masters in src/assets.
+ * `eager` is for the single LCP image per page.
+ */
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  class?: string;
+  sizes?: string;
+  widths?: number[];
+  /** load immediately (above the fold) */
+  eager?: boolean;
+  /** fetchpriority=high — only for the single LCP image */
+  priority?: boolean;
+  quality?: number;
+  width?: number;
+  height?: number;
+  title?: string;
+}
+const {
+  src, alt, class: cls, sizes = '(min-width: 1024px) 50vw, 100vw', widths = [480, 768, 1100, 1376],
+  eager = false, priority = false, quality = 80, width, height, title,
+} = Astro.props;
+const usable = widths.filter((w) => w <= src.width);
+---
+<Image
+  src={src} alt={alt} title={title} class={cls} format="webp" quality={quality}
+  widths={usable.length ? usable : [src.width]} sizes={sizes}
+  width={width ?? Math.min(src.width, usable[usable.length - 1] ?? src.width)}
+  height={height}
+  loading={eager ? 'eager' : 'lazy'} decoding={eager ? 'sync' : 'async'} fetchpriority={priority ? 'high' : undefined}
+/>

@@ -1,0 +1,82 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import Photo from './Photo.astro';
+import { Image } from 'astro:assets';
+import { site } from '../config/site';
+import { services } from '../data/services';
+import { areas } from '../data/areas';
+import { img } from '../lib/images';
+import shared from '../data/legacy/shared.json';
+import home from '../data/legacy/home.json';
+
+interface Props { tagline?: string; showRating?: boolean }
+const { tagline = home.footer.tagline, showRating = false } = Astro.props;
+const year = new Date().getFullYear();
+const link = 'inline-block py-[0.2rem] text-[0.92rem] text-ink-300 transition-colors hover:text-white';
+---
+<footer class="relative isolate overflow-hidden bg-ink-950 text-ink-300">
+  <Photo src={img.footerBg} alt="" class="absolute inset-0 -z-10 size-full object-cover opacity-40" widths={[768, 1376]} sizes="100vw" />
+  <div class="absolute inset-0 -z-10 bg-gradient-to-b from-ink-950 via-ink-950/80 to-ink-950"></div>
+
+  <div class="wrap grid gap-12 pb-12 pt-16 lg:grid-cols-12">
+    <div class="lg:col-span-4">
+      <div class="inline-block rounded-2xl bg-white p-4 shadow-lift"><Logo /></div>
+      <p class="mt-6 max-w-sm text-[0.98rem] leading-relaxed text-ink-200">{tagline}</p>
+      <p class="mt-2 text-sm font-semibold text-ink-300">Serving Pflugerville &amp; Surrounding Areas</p>
+      {showRating && (
+        <p class="mt-4 flex items-center gap-2 text-sm font-semibold text-white">
+          <span class="flex text-flame-400" aria-hidden="true">{[0, 1, 2, 3, 4].map(() => <Icon name="star" class="size-4 fill-current" />)}</span>
+          5.0 Rating
+        </p>
+      )}
+      <ul class="mt-6 space-y-3 text-[0.95rem]">
+        <li><a href={site.phone.href} class="inline-flex items-center gap-3 font-semibold text-white hover:text-flame-400"><span class="grid size-9 place-items-center rounded-lg bg-brand-600"><Icon name="phone" class="size-[1.1rem]" /></span>{site.phone.display}</a></li>
+        <li><a href={`mailto:${site.email}`} class="inline-flex items-center gap-3 hover:text-white"><span class="grid size-9 place-items-center rounded-lg bg-white/10"><Icon name="mail" class="size-[1.1rem]" /></span>{site.email}</a></li>
+        <li class="flex items-start gap-3"><span class="grid size-9 shrink-0 place-items-center rounded-lg bg-white/10"><Icon name="map-pin" class="size-[1.1rem]" /></span><address class="not-italic leading-snug">{site.address.full}</address></li>
+        <li class="flex items-start gap-3"><span class="grid size-9 shrink-0 place-items-center rounded-lg bg-white/10"><Icon name="clock" class="size-[1.1rem]" /></span><span class="leading-snug">{site.hours.lines.map((l) => <span class="block">{l}</span>)}</span></li>
+      </ul>
+      <div class="mt-7 flex items-center gap-4">
+        <Image src={img.badgeShield} alt="Pflugerville Roof Experts trust badge" width={88} height={88} class="size-[5.5rem] rounded-xl" format="webp" quality={85} loading="lazy" />
+        <Image src={img.badgeRound} alt="Pflugerville Roof Experts 24/7 service badge" width={88} height={88} class="size-[5.5rem] rounded-full" format="webp" quality={85} loading="lazy" />
+      </div>
+    </div>
+
+    <nav class="lg:col-span-5" aria-label="Services">
+      <h2 class="font-display text-2xl font-bold uppercase tracking-wide text-white">Our Services</h2>
+      <ul class="mt-4 grid gap-x-8 sm:grid-cols-2">
+        {services.map((s) => (<li><a href={s.path} class={link}>{s.name}</a></li>))}
+      </ul>
+    </nav>
+
+    <div class="grid gap-10 sm:grid-cols-2 lg:col-span-3 lg:grid-cols-1">
+      <nav aria-label="Service areas">
+        <h2 class="font-display text-2xl font-bold uppercase tracking-wide text-white">Service Areas</h2>
+        <ul class="mt-4 grid grid-cols-2 gap-x-4 lg:grid-cols-1 xl:grid-cols-2">
+          {areas.map((a) => (<li><a href={a.path} class={link}>{a.name}</a></li>))}
+        </ul>
+      </nav>
+      <nav aria-label="Quick links">
+        <h2 class="font-display text-2xl font-bold uppercase tracking-wide text-white">Quick Links</h2>
+        <ul class="mt-4">
+          <li><a href="/" class={link}>Home</a></li>
+          <li><a href="/#about" class={link}>About</a></li>
+          <li><a href="/#services" class={link}>Services</a></li>
+          <li><a href="/blog/" class={link}>Blog</a></li>
+          <li><a href="/#contact" class={link}>Contact</a></li>
+          <li><a href="#states" class={link}>{shared.nationwide.statesTitle}</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="wrap flex flex-col items-center justify-between gap-3 py-6 text-sm text-ink-400 sm:flex-row">
+      <p>© {year} {site.name}. All rights reserved.</p>
+      <p class="flex items-center gap-5">
+        <span class="inline-flex items-center gap-1.5"><Icon name="shield-check" class="size-4 text-flame-400" />Licensed &amp; Insured</span>
+        <span class="inline-flex items-center gap-1.5"><Icon name="clock" class="size-4 text-flame-400" />24/7 Emergency Service</span>
+      </p>
+    </div>
+  </div>
+</footer>

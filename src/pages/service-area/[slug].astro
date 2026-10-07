@@ -1,0 +1,127 @@
+---
+import { getImage } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import MapSection from '../../components/MapSection.astro';
+import NationwideStates from '../../components/NationwideStates.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import { areas, type Area } from '../../data/areas';
+import { services } from '../../data/services';
+import { site, abs } from '../../config/site';
+import { graph, businessNode, websiteNode, webPageNode, breadcrumbNode, ids } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return areas.map((a) => ({ params: { slug: a.slug }, props: { a } }));
+}
+const { a } = Astro.props as { a: Area };
+const shareImg = await getImage({ src: a.image, width: 1200, height: 630, format: 'jpg', quality: 82 });
+const og = abs(shareImg.src);
+
+const featured = a.serviceLinks;
+const more = services.filter((s) => !featured.some((l) => l.href === s.path));
+const nearbyMore = areas.filter((x) => x.slug !== a.slug && !a.nearbyLinks.some((l) => l.href === x.path));
+
+const placeNode = {
+  '@type': 'Place',
+  '@id': `${abs(a.path)}#place`,
+  name: `${a.name}, Pflugerville, TX`,
+  address: { '@type': 'PostalAddress', addressLocality: 'Pflugerville', addressRegion: 'TX', postalCode: '78660', addressCountry: 'US' },
+  containedInPlace: { '@type': 'City', name: 'Pflugerville', containedInPlace: { '@type': 'State', name: 'Texas' } },
+};
+const schema = graph(
+  businessNode(),
+  websiteNode(),
+  webPageNode({ path: a.path, name: a.title, description: a.description, image: og, breadcrumb: true, extra: { about: { '@id': `${abs(a.path)}#place` }, mainEntity: { '@id': `${abs(a.path)}#service` } } }),
+  breadcrumbNode(a.path, [{ name: 'Home', path: '/' }, { name: a.name, path: a.path }]),
+  placeNode,
+  {
+    '@type': 'Service',
+    '@id': `${abs(a.path)}#service`,
+    name: `Roofing services in ${a.name}, Pflugerville, TX`,
+    serviceType: 'Roofing',
+    description: a.description,
+    url: abs(a.path),
+    provider: { '@id': ids.business },
+    areaServed: { '@id': `${abs(a.path)}#place` },
+  },
+);
+const row = (l: string) => l.replace(/:$/, '');
+---
+<BaseLayout title={a.title} description={a.description} path={a.path} image={og} schema={schema}>
+  <PageHero
+    h1={a.h1} subtitle={a.subtitle} image={a.image} imageAlt={`Roofing project in ${a.name}, Pflugerville TX 78660`}
+    crumbs={[{ name: 'Home', path: '/' }, { name: a.name }]} eyebrow={`${a.name} · 78660`}
+    ctaLabel={`Call ${site.phone.display} Now`} meta={['Licensed & Insured', '24/7 Emergency']}
+  />
+
+  <section class="section bg-white">
+    <div class="wrap grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_21.5rem] xl:gap-14">
+      <div class="min-w-0 space-y-14">
+        <article class="card p-6 sm:p-10 reveal"><div class="prose-roof" set:html={a.prose} /></article>
+
+        <section aria-labelledby="why-h">
+          <h2 id="why-h" class="h-display border-l-[5px] border-brand-600 pl-4 text-[1.9rem] text-ink-900 sm:text-[2.2rem]">{a.whyHeading}</h2>
+          <ul class="mt-6 grid gap-4 sm:grid-cols-2">
+            {a.why.map((w) => (
+              <li class="card flex items-start gap-4 border-l-4 !border-l-brand-600 p-5 reveal">
+                <span class="grid size-10 shrink-0 place-items-center rounded-full bg-brand-600 text-white shadow-brand"><Icon name="star" class="size-5 fill-current" /></span>
+                <div><h3 class="text-[1.05rem] font-bold leading-snug text-ink-900">{w.title}</h3><p class="mt-1.5 text-[0.95rem] leading-relaxed text-ink-500">{w.text}</p></div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section class="rounded-2xl border-l-[6px] border-brand-600 bg-brand-50 p-7 sm:p-8 reveal" aria-labelledby="cov-h">
+          <h2 id="cov-h" class="flex items-center gap-3 font-display text-3xl font-bold uppercase leading-none text-ink-900"><Icon name="map-pin" class="size-6 text-brand-600" />{a.coverage.title}</h2>
+          <p class="mt-4 text-lg leading-relaxed text-ink-700">{a.coverage.text}</p>
+        </section>
+      </div>
+
+      <aside class="space-y-6 lg:sticky lg:top-28" aria-label="Local contact and services">
+        <div class="relative overflow-hidden rounded-2xl bg-ink-900 p-7 text-white shadow-lift">
+          <div class="absolute -right-12 -top-12 size-44 rounded-full bg-brand-600/40 blur-2xl"></div>
+          <h2 class="relative font-display text-3xl font-bold uppercase leading-none">{a.cta.title}</h2>
+          <p class="relative mt-4 text-[0.97rem] leading-relaxed text-ink-200">{a.cta.text}</p>
+          <a href={site.phone.href} class="btn btn-primary relative mt-6 w-full"><Icon name="phone" class="size-5" />Call {site.phone.display}</a>
+        </div>
+
+        <div class="card p-6">
+          <h2 class="flex items-center gap-2 font-display text-2xl font-bold uppercase leading-none text-ink-900"><Icon name="map-pin" class="size-5 text-brand-600" />{a.infoTitle}</h2>
+          <dl class="mt-4 divide-y divide-ink-100 text-[0.95rem]">
+            {a.infoRows.map((r) => (<div class="flex items-center justify-between gap-4 py-2.5"><dt class="text-ink-500">{r.label}</dt><dd class="text-right font-bold text-ink-900">{r.value}</dd></div>))}
+          </dl>
+          <h3 class="mt-5 border-t border-ink-100 pt-4 text-[0.95rem] font-bold text-ink-900">{a.servicesHeading}</h3>
+          <ul class="mt-2 space-y-0.5">
+            {featured.map((l) => (<li><a href={l.href} class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-[0.93rem] font-medium text-ink-700 transition-colors hover:bg-brand-50 hover:text-brand-700"><Icon name="wrench" class="size-4 text-ink-400" />{l.label}</a></li>))}
+          </ul>
+          <details class="group mt-2">
+            <summary class="flex cursor-pointer list-none items-center gap-1 px-2 py-1.5 text-sm font-bold text-brand-700 [&::-webkit-details-marker]:hidden">All services <Icon name="chevron-down" class="size-4 transition-transform group-open:rotate-180" /></summary>
+            <ul class="space-y-0.5">
+              {more.map((s) => (<li><a href={s.path} class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-[0.93rem] font-medium text-ink-700 transition-colors hover:bg-brand-50 hover:text-brand-700"><Icon name={s.icon} class="size-4 text-ink-400" />{s.name}</a></li>))}
+            </ul>
+          </details>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <MapSection title={a.map.title} subtitle={a.map.subtitle} iframe={a.map.iframe} contact={a.map.contact} mapTitle={`Map of ${a.name}, Pflugerville TX`}>
+    <div class="card p-6">
+      <h3 class="flex items-center gap-2 font-display text-2xl font-bold uppercase leading-none text-ink-900"><Icon name="map" class="size-5 text-brand-600" />{a.nearbyTitle}</h3>
+      <ul class="mt-3 space-y-0.5">
+        {a.nearbyLinks.map((l) => (<li><a href={l.href} class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-[0.93rem] font-medium text-ink-700 transition-colors hover:bg-brand-50 hover:text-brand-700"><Icon name="map-pin" class="size-4 text-ink-400" />{l.label}</a></li>))}
+      </ul>
+      <details class="group mt-2">
+        <summary class="flex cursor-pointer list-none items-center gap-1 px-2 py-1.5 text-sm font-bold text-brand-700 [&::-webkit-details-marker]:hidden">More neighborhoods <Icon name="chevron-down" class="size-4 transition-transform group-open:rotate-180" /></summary>
+        <ul class="space-y-0.5">
+          {nearbyMore.map((x) => (<li><a href={x.path} class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-[0.93rem] font-medium text-ink-700 transition-colors hover:bg-brand-50 hover:text-brand-700"><Icon name="map-pin" class="size-4 text-ink-400" />{x.name}</a></li>))}
+        </ul>
+      </details>
+      <div class="mt-4 border-t border-ink-100 pt-4"><a href="/#service-areas" class="inline-flex items-center gap-2 text-sm font-bold text-brand-700 hover:text-brand-800"><Icon name="arrow-left" class="size-4" />{a.viewAllLabel}</a></div>
+    </div>
+  </MapSection>
+
+  <NationwideStates />
+  <FinalCta title={a.cta.title} text={a.cta.text} />
+</BaseLayout>

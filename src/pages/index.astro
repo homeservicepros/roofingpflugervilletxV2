@@ -1,0 +1,284 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import Photo from '../components/Photo.astro';
+import NationwideStates from '../components/NationwideStates.astro';
+import { site, mapEmbed } from '../config/site';
+import { img, photos } from '../lib/images';
+import { stripEmoji } from '../lib/text';
+import { services } from '../data/services';
+import { areas } from '../data/areas';
+import home from '../data/legacy/home.json';
+import { graph, businessNode, websiteNode, webPageNode } from '../lib/schema';
+
+const h = home;
+const path = '/';
+
+// ---- Legacy "About" copy, unchanged. Only link-wrapping (internal links) and rel on the one outbound link are added.
+const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+let about = h.about.prose;
+about = about.replace(/<li>([^<]+)<\/li>/g, (m, t) => {
+  const svc = services.find((s) => s.name === t.trim());
+  return svc ? `<li><a href="${svc.path}">${t}</a></li>` : m;
+});
+about = about.replace(/(We serve the following neighborhoods:)([^<]+)/, (_m, lead, list) => {
+  let out = list;
+  for (const a of [...areas].sort((x, y) => y.name.length - x.name.length)) {
+    out = out.replace(new RegExp(`(?<![>\\w])${esc(a.name)}(?![^<]*</a>)`), `<a href="${a.path}">${a.name}</a>`);
+  }
+  return lead + out;
+});
+about = about.replace(/<a href="(https?:\/\/(?!www\.pflugervilleroofexperts)[^"]+)"/g, '<a href="$1" rel="sponsored nofollow noopener" target="_blank"');
+
+const featured = h.services.cards.map((c) => {
+  const slug = c.href.replace(/^\/?services\//, '');
+  return { ...c, svc: services.find((s) => s.slug === slug)! };
+});
+const additional = h.services.additional.map((l) => services.find((s) => s.slug === l.href.replace(/^\/?services\//, ''))!);
+
+const [contactName, contactServing, hoursLabel, hoursValue] = h.find.contact;
+const schema = graph(
+  businessNode(true),
+  websiteNode(),
+  webPageNode({ path, name: h.title, description: h.description, type: 'WebPage', image: `${site.url}/og-default.jpg` }),
+);
+const heroCta = stripEmoji(h.hero.ctaLabel);
+const [ctaBefore, ctaAfter] = heroCta.split(site.phone.display);
+---
+<BaseLayout title={h.title} description={h.description} path={path} schema={schema} showRating>
+  <!-- HERO -->
+  <section id="home" class="relative isolate overflow-hidden bg-ink-950 text-white">
+    <Photo src={img.headerBg} alt="" eager priority quality={60} class="absolute inset-0 -z-10 size-full object-cover" widths={[640, 1280]} sizes="100vw" />
+    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-ink-950/90 via-ink-950/60 to-ink-950/10"></div>
+    <div class="wrap grid items-center gap-12 pb-28 pt-12 sm:pt-16 lg:grid-cols-[1.05fr_0.95fr] lg:pb-36 lg:pt-20">
+      <div>
+        <p class="inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 ring-1 ring-white/25 backdrop-blur">
+          <span class="flex text-flame-400" aria-hidden="true">{[0, 1, 2, 3, 4].map(() => <Icon name="star" class="size-4 fill-current" />)}</span>
+          <span class="text-[0.95rem] font-semibold">{h.hero.badge}</span>
+        </p>
+        <h1 class="h-display mt-6 text-[2.7rem] text-shadow-soft sm:text-6xl lg:text-[4.6rem]">{h.hero.h1}</h1>
+        <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink-100 sm:text-xl">{h.hero.subtitle}</p>
+        <p class="mt-6 max-w-xl rounded-xl border-l-4 border-flame-500 bg-white/10 px-4 py-3 text-[1.02rem] font-medium leading-relaxed text-white backdrop-blur">
+          {ctaBefore}<a href={site.phone.href} class="font-bold text-flame-400 underline decoration-2 underline-offset-4 hover:text-white">{site.phone.display}</a>{ctaAfter}
+        </p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href={site.phone.href} class="btn btn-primary btn-lg"><Icon name="phone" class="size-5" />Call {site.phone.display}</a>
+          <a href="#services" class="btn btn-outline-light btn-lg">{h.hero.secondaryLabel}</a>
+        </div>
+        <dl class="mt-10 grid max-w-xl grid-cols-3 gap-4 border-t border-white/20 pt-6">
+          {h.hero.stats.map((s) => (<div><dt class="font-display text-3xl font-bold uppercase leading-none sm:text-4xl">{s.value}</dt><dd class="mt-1 text-[0.82rem] text-ink-200 sm:text-sm">{s.label}</dd></div>))}
+        </dl>
+      </div>
+
+      <div class="relative mx-auto w-full max-w-[34rem] lg:max-w-none">
+        <div class="absolute -inset-3 -rotate-2 rounded-[2rem] bg-brand-600/80"></div>
+        <Photo src={photos.team.src} alt={photos.team.alt} eager priority class="relative aspect-[5/4] w-full rotate-1 rounded-[1.6rem] object-cover shadow-lift ring-4 ring-white/90" widths={[480, 768, 1100]} sizes="(min-width: 1024px) 520px, 92vw" />
+        <Image src={img.badgeShield} alt="Pflugerville Roof Experts trust badge with phone number" width={140} height={140} class="absolute -right-3 -top-8 z-10 size-28 rotate-6 drop-shadow-2xl sm:-right-6 sm:size-36" format="webp" quality={88} loading="eager" />
+        <Image src={img.badgeRound} alt="Pflugerville Roof Experts 24/7 service badge" width={130} height={130} class="absolute -bottom-8 -left-3 z-10 size-24 -rotate-6 drop-shadow-2xl sm:-left-8 sm:size-32" format="webp" quality={88} loading="eager" />
+        {site.showReviewCardGraphic && (
+          <Image src={img.reviewCard} alt="Customer review" width={220} height={220} class="absolute -bottom-10 right-4 z-10 hidden size-48 drop-shadow-2xl sm:block" format="webp" quality={85} loading="lazy" />
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- ESTIMATE STRIP -->
+  <div class="relative z-10 -mt-16 sm:-mt-20">
+    <div class="wrap">
+      <div class="grid items-center gap-6 rounded-3xl bg-white p-6 shadow-lift ring-1 ring-ink-100 sm:p-8 lg:grid-cols-[1fr_auto] lg:gap-12">
+        <div>
+          <h2 class="font-display text-3xl font-bold uppercase leading-none text-ink-900 sm:text-4xl">{h.hero.estimateTitle}</h2>
+          <ul class="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-3">
+            {h.hero.estimateItems.map((e) => (
+              <li class="flex items-start gap-3">
+                <span class="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-brand-600 text-white"><Icon name="check" class="size-[1.15rem]" stroke={3} /></span>
+                <div><h3 class="font-bold leading-tight text-ink-900">{stripEmoji(e.title)}</h3><p class="mt-0.5 text-sm text-ink-500">{e.text}</p></div>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <a href={site.phone.href} class="btn btn-primary btn-lg w-full lg:w-auto"><Icon name="phone" class="size-5" />Call {site.phone.display}</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about" class="section bg-white">
+    <div class="wrap">
+      <div class="grid items-center gap-14 lg:grid-cols-[0.9fr_1.1fr]">
+        <div class="relative pb-16 pr-6 sm:pr-12 reveal">
+          <Photo src={photos.exterior.src} alt={photos.exterior.alt} class="aspect-[4/3] w-full rounded-3xl object-cover shadow-lift" widths={[480, 768, 1100]} sizes="(min-width: 1024px) 480px, 92vw" />
+          <Photo src={photos.owner.src} alt={photos.owner.alt} class="absolute -bottom-0 right-0 aspect-[4/3] w-[58%] rounded-2xl object-cover shadow-lift ring-8 ring-white" widths={[480, 768]} sizes="(min-width: 1024px) 280px, 50vw" />
+          <div class="absolute left-4 top-4 flex items-center gap-2 rounded-xl bg-ink-900/90 px-4 py-2.5 text-white backdrop-blur"><Icon name="shield-check" class="size-5 text-flame-400" /><span class="text-sm font-bold">{site.tagline}</span></div>
+        </div>
+        <div class="reveal">
+          <p class="eyebrow"><Icon name="users" class="size-4" />{h.about.badge}</p>
+          <h2 class="section-title mt-5">{h.about.h2}</h2>
+          <div class="prose-roof mt-6" set:html={about} />
+        </div>
+      </div>
+      <ul class="mt-16 grid gap-6 md:grid-cols-3">
+        {h.about.features.map((f, i) => (
+          <li class="card group p-8 text-center transition duration-300 hover:-translate-y-1 hover:shadow-lift reveal">
+            <span class="mx-auto grid size-16 place-items-center rounded-2xl bg-brand-600 text-white shadow-brand transition-transform duration-300 group-hover:scale-110"><Icon name={['award', 'clock', 'handshake'][i]} class="size-8" /></span>
+            <h3 class="mt-6 font-display text-3xl font-bold uppercase leading-none text-ink-900">{f.title}</h3>
+            <p class="mt-3 leading-relaxed text-ink-500">{f.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services" class="section bg-ink-50">
+    <div class="wrap">
+      <div class="mx-auto max-w-3xl text-center reveal">
+        <p class="eyebrow"><Icon name="wrench" class="size-4" />Roofing &amp; Gutters</p>
+        <h2 class="section-title mt-5">{h.services.h2}</h2>
+        <p class="section-lead mx-auto">{h.services.subtitle}</p>
+      </div>
+      <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {featured.map((c, i) => (
+          <li class="reveal">
+            <article class="card group flex h-full flex-col overflow-hidden transition duration-300 hover:-translate-y-1.5 hover:shadow-lift">
+              <a href={c.svc.path} class="relative block overflow-hidden" tabindex="-1" aria-hidden="true">
+                <Photo src={c.svc.image} alt="" class="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105" widths={[480, 768]} sizes="(min-width: 1024px) 280px, (min-width: 640px) 45vw, 92vw" />
+                <span class="absolute left-4 top-4 grid size-11 place-items-center rounded-full bg-brand-600 font-display text-2xl font-bold text-white shadow-brand">{i + 1}</span>
+              </a>
+              <div class="flex flex-1 flex-col p-6">
+                <h3 class="font-display text-[1.7rem] font-bold uppercase leading-[1.05] text-ink-900"><a href={c.svc.path} class="transition-colors hover:text-brand-700">{c.title}</a></h3>
+                <p class="mt-3 flex-1 text-ink-500">{c.text}</p>
+                <a href={c.svc.path} class="mt-5 inline-flex items-center gap-2 font-bold text-brand-700 transition-colors group-hover:text-brand-800">{c.cta}</a>
+              </div>
+            </article>
+          </li>
+        ))}
+      </ul>
+
+      <h3 class="mt-16 text-center font-display text-3xl font-bold uppercase text-ink-900">{h.services.additionalTitle}</h3>
+      <ul class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {additional.map((s) => (
+          <li>
+            <a href={s.path} class="group flex min-h-16 items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-card ring-1 ring-ink-100 transition duration-200 hover:-translate-y-0.5 hover:shadow-lift hover:ring-brand-300">
+              <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-ink-900 text-white transition-colors group-hover:bg-brand-600"><Icon name={s.icon} class="size-5" /></span>
+              <span class="font-semibold leading-snug text-ink-800 group-hover:text-brand-700">{s.name}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- WHY US -->
+  <section class="relative isolate overflow-hidden bg-ink-900 section text-white">
+    <Photo src={img.footerBg} alt="" class="absolute inset-0 -z-10 size-full object-cover opacity-30" widths={[768, 1376]} sizes="100vw" />
+    <div class="wrap grid items-start gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+      <div class="lg:sticky lg:top-28 reveal">
+        <p class="eyebrow eyebrow-dark"><Icon name="badge-check" class="size-4" />{stripEmoji(h.why.badge)}</p>
+        <h2 class="h-display mt-5 text-[2.3rem] sm:text-5xl lg:text-[3.4rem]">{h.why.h2}</h2>
+        <p class="mt-5 max-w-md text-lg leading-relaxed text-ink-200">{h.why.subtitle}</p>
+        <Photo src={photos.unloading.src} alt={photos.unloading.alt} class="mt-8 aspect-[4/3] w-full rounded-2xl object-cover shadow-lift ring-1 ring-white/20" widths={[480, 768, 1100]} sizes="(min-width: 1024px) 420px, 92vw" />
+      </div>
+      <ol class="space-y-4">
+        {h.why.items.map((w, i) => (
+          <li class="flex gap-5 rounded-2xl bg-white/[0.07] p-5 ring-1 ring-white/15 backdrop-blur-sm transition-colors hover:bg-white/[0.12] sm:p-6 reveal">
+            <span class="grid size-14 shrink-0 place-items-center rounded-xl bg-brand-600 font-display text-3xl font-bold shadow-brand">{i + 1}</span>
+            <div><h3 class="font-display text-[1.7rem] font-bold uppercase leading-none">{w.title}</h3><p class="mt-2 leading-relaxed text-ink-200">{w.text}</p></div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- BEFORE / AFTER -->
+  <section class="section bg-white" aria-labelledby="work-h">
+    <div class="wrap">
+      <div class="mx-auto max-w-3xl text-center reveal">
+        <p class="eyebrow"><Icon name="sparkles" class="size-4" />Our Work</p>
+        <h2 id="work-h" class="section-title mt-5">Before &amp; After</h2>
+      </div>
+      <ul class="mt-12 grid gap-6 sm:grid-cols-2">
+        {[
+          { src: img.ba2, alt: 'Before and after: aged residential shingle roof replaced with a new roof', cap: 'Residential roof replacement' },
+          { src: img.ba3, alt: 'Before and after: worn commercial flat roof replaced with a new metal roof system', cap: 'Commercial roof replacement' },
+          { src: img.ba1, alt: 'Before and after: water-stained ceiling repaired and finished with a new skylight', cap: 'Leak repair and skylight' },
+          { src: img.ba4, alt: 'Before and after: warehouse roof deck repaired with new skylight panels', cap: 'Warehouse roof repair' },
+        ].map((b) => (
+          <li class="reveal">
+            <figure class="card overflow-hidden">
+              <Photo src={b.src} alt={b.alt} class="aspect-video w-full object-cover" widths={[480, 768, 1100]} sizes="(min-width: 640px) 560px, 92vw" />
+              <figcaption class="flex items-center gap-2 px-5 py-3.5 font-semibold text-ink-800"><Icon name="check" class="size-5 text-brand-600" stroke={3} />{b.cap}</figcaption>
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- FIND US -->
+  <section id="service-areas" class="section bg-ink-50">
+    <div class="wrap">
+      <div class="mx-auto max-w-3xl text-center reveal">
+        <h2 class="section-title">{h.find.h2}</h2>
+        <p class="section-lead mx-auto">{h.find.subtitle}</p>
+      </div>
+      <div class="mt-12 grid gap-8 lg:grid-cols-3">
+        <div class="overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-ink-100 lg:col-span-2 reveal">
+          <iframe class="h-80 w-full sm:h-[28rem] lg:h-full lg:min-h-[28rem]" style="border:0" src={mapEmbed(site.address.full, 15)} title={`Map — ${site.name}, ${site.address.full}`} loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <div class="space-y-6 reveal">
+          <div class="card p-6">
+            <h3 class="font-display text-2xl font-bold uppercase leading-none text-ink-900">Contact Information</h3>
+            <ul class="mt-5 space-y-4 text-[0.97rem]">
+              <li class="flex items-center gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-lg bg-brand-600 text-white"><Icon name="phone" class="size-5" /></span><a href={site.phone.href} class="text-lg font-bold text-ink-900 hover:text-brand-700">{site.phone.display}</a></li>
+              <li class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-lg bg-ink-100 text-ink-700"><Icon name="map-pin" class="size-5" /></span><div><p class="font-semibold text-ink-900">{contactName}</p><p class="text-ink-500">{contactServing}</p><address class="mt-1 text-sm not-italic text-ink-500">{site.address.full}</address></div></li>
+              <li class="flex items-center gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-lg bg-ink-100 text-ink-700"><Icon name="mail" class="size-5" /></span><a href={`mailto:${site.email}`} class="break-all font-semibold text-ink-900 hover:text-brand-700">{site.email}</a></li>
+              <li class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-lg bg-ink-100 text-ink-700"><Icon name="clock" class="size-5" /></span><div><p class="font-semibold text-ink-900">{hoursLabel}</p><p class="text-ink-500">{hoursValue}</p></div></li>
+            </ul>
+          </div>
+          <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 p-6 text-white shadow-brand">
+            <div class="absolute -right-10 -top-10 size-36 rounded-full bg-flame-500/40 blur-2xl"></div>
+            <h3 class="relative font-display text-3xl font-bold uppercase leading-none">{h.find.emergencyTitle}</h3>
+            <p class="relative mt-3 leading-relaxed text-white/90">{h.find.emergencyText}</p>
+            <a href={site.phone.href} class="btn btn-light relative mt-5 w-full"><Icon name="phone" class="size-5 text-brand-600" />{stripEmoji(h.find.emergencyCta)}</a>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="mt-14 text-center font-display text-3xl font-bold uppercase text-ink-900">Pflugerville neighborhoods we serve</h3>
+      <ul class="mt-6 flex flex-wrap justify-center gap-3">
+        {areas.map((a) => (
+          <li><a href={a.path} class="inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-4 py-2 text-[0.95rem] font-semibold text-ink-800 shadow-card ring-1 ring-ink-100 transition hover:-translate-y-0.5 hover:text-brand-700 hover:ring-brand-300"><Icon name="map-pin" class="size-4 text-brand-600" />{a.name}</a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <NationwideStates />
+
+  <!-- CONTACT -->
+  <section id="contact" class="relative isolate overflow-hidden bg-ink-900 section text-white">
+    <Photo src={img.headerBg} alt="" class="absolute inset-0 -z-10 size-full object-cover opacity-80" widths={[768, 1376]} sizes="100vw" />
+    <div class="absolute inset-0 -z-10 bg-ink-950/70"></div>
+    <div class="wrap grid items-center gap-12 lg:grid-cols-2">
+      <div class="reveal">
+        <h2 class="h-display text-[2.4rem] sm:text-5xl lg:text-6xl">{h.contact.h2}</h2>
+        <p class="mt-4 text-xl text-ink-100">{h.contact.subtitle}</p>
+        <ul class="mt-8 space-y-5">
+          <li class="flex items-center gap-4"><span class="grid size-12 shrink-0 place-items-center rounded-full bg-brand-600"><Icon name="phone" class="size-6" /></span><div><p class="font-semibold text-ink-200">{h.contact.labels[0]}</p><a href={site.phone.href} class="text-2xl font-bold hover:text-flame-400">{site.phone.display}</a></div></li>
+          <li class="flex items-center gap-4"><span class="grid size-12 shrink-0 place-items-center rounded-full bg-brand-600"><Icon name="mail" class="size-6" /></span><div><p class="font-semibold text-ink-200">Email</p><a href={`mailto:${site.email}`} class="break-all text-xl font-bold hover:text-flame-400">{site.email}</a></div></li>
+          <li class="flex items-center gap-4"><span class="grid size-12 shrink-0 place-items-center rounded-full bg-brand-600"><Icon name="map-pin" class="size-6" /></span><div><p class="font-semibold text-ink-200">{h.contact.labels[1]}</p><p class="text-xl font-bold">Pflugerville, TX</p><address class="text-sm not-italic text-ink-300">{site.address.full}</address></div></li>
+          <li class="flex items-center gap-4"><span class="grid size-12 shrink-0 place-items-center rounded-full bg-brand-600"><Icon name="clock" class="size-6" /></span><div><p class="font-semibold text-ink-200">{h.contact.labels[2]}</p><p class="text-lg font-bold leading-snug">{site.hours.lines.map((l) => <span class="block">{l}</span>)}</p></div></li>
+        </ul>
+      </div>
+      <div class="relative rounded-3xl bg-white p-8 text-ink-900 shadow-lift sm:p-10 reveal">
+        <Image src={img.badgeRound} alt="" width={120} height={120} class="absolute -right-4 -top-10 size-24 rotate-6 drop-shadow-2xl sm:-right-6 sm:size-28" format="webp" quality={88} loading="lazy" />
+        <h3 class="font-display text-4xl font-bold uppercase leading-none text-brand-700">{h.contact.formTitle}</h3>
+        <p class="mt-4 text-lg text-ink-600">{h.contact.formText}</p>
+        <a href={site.phone.href} class="btn btn-primary btn-lg mt-7 w-full"><Icon name="phone" class="size-5" />Call {site.phone.display}</a>
+        <p class="mt-4 text-center text-sm text-ink-500">Or email <a href={`mailto:${site.email}`} class="font-semibold text-brand-700 underline underline-offset-4">{site.email}</a></p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

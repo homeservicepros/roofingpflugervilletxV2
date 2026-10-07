@@ -1,0 +1,215 @@
+{
+  "nationwide": {
+    "badge": "Nationwide Coverage",
+    "h2": "Roofing Contractor Serving across USA",
+    "text": "From our headquarters office location in Pflugerville, TX, we proudly serve roofing customers across the United States with professional roofing contractors near your area with reliable service and expert craftsmanship.",
+    "iframe": "https://maps.google.com/maps?q=United%20States&t=&z=4&ie=UTF8&iwloc=&output=embed",
+    "whyTitle": "Why Choose Nationwide Service?",
+    "why": [
+      {
+        "title": "Licensed & Insured Nationwide",
+        "text": "Fully licensed and insured to provide roofing services across all 50 states with comprehensive coverage."
+      },
+      {
+        "title": "24/7 Emergency Response",
+        "text": "Round-the-clock emergency roofing services available nationwide for urgent repairs and storm damage."
+      },
+      {
+        "title": "Industry-Leading Expertise",
+        "text": "Over 15 years of roofing experience with certified professionals serving residential and commercial clients nationwide."
+      }
+    ],
+    "statesTitle": "States We Serve"
+  },
+  "legacyStates": [
+    {
+      "code": "tx",
+      "name": "Texas"
+    },
+    {
+      "code": "mn",
+      "name": "Minnesota"
+    },
+    {
+      "code": "ca",
+      "name": "California"
+    },
+    {
+      "code": "dc",
+      "name": "Washington DC"
+    },
+    {
+      "code": "oh",
+      "name": "Ohio"
+    },
+    {
+      "code": "ky",
+      "name": "Kentucky"
+    },
+    {
+      "code": "co",
+      "name": "Colorado"
+    },
+    {
+      "code": "tn",
+      "name": "Tennessee"
+    },
+    {
+      "code": "il",
+      "name": "Illinois"
+    },
+    {
+      "code": "in",
+      "name": "Indiana"
+    },
+    {
+      "code": "fl",
+      "name": "Florida"
+    },
+    {
+      "code": "ok",
+      "name": "Oklahoma"
+    },
+    {
+      "code": "ne",
+      "name": "Nebraska"
+    },
+    {
+      "code": "ga",
+      "name": "Georgia"
+    },
+    {
+      "code": "ma",
+      "name": "Massachusetts"
+    },
+    {
+      "code": "ct",
+      "name": "Connecticut"
+    },
+    {
+      "code": "wa",
+      "name": "Washington"
+    },
+    {
+      "code": "ks",
+      "name": "Kansas"
+    },
+    {
+      "code": "sc",
+      "name": "South Carolina"
+    },
+    {
+      "code": "nc",
+      "name": "North Carolina"
+    },
+    {
+      "code": "ak",
+      "name": "Alaska"
+    },
+    {
+      "code": "mi",
+      "name": "Michigan"
+    },
+    {
+      "code": "nj",
+      "name": "New Jersey"
+    },
+    {
+      "code": "va",
+      "name": "Virginia"
+    },
+    {
+      "code": "mo",
+      "name": "Missouri"
+    },
+    {
+      "code": "ny",
+      "name": "New York"
+    },
+    {
+      "code": "md",
+      "name": "Maryland"
+    },
+    {
+      "code": "ri",
+      "name": "Rhode Island"
+    },
+    {
+      "code": "or",
+      "name": "Oregon"
+    },
+    {
+      "code": "pa",
+      "name": "Pennsylvania"
+    },
+    {
+      "code": "wi",
+      "name": "Wisconsin"
+    },
+    {
+      "code": "id",
+      "name": "Idaho"
+    },
+    {
+      "code": "vt",
+      "name": "Vermont"
+    },
+    {
+      "code": "ms",
+      "name": "Mississippi"
+    },
+    {
+      "code": "al",
+      "name": "Alabama"
+    },
+    {
+      "code": "la",
+      "name": "Louisiana"
+    },
+    {
+      "code": "me",
+      "name": "Maine"
+    },
+    {
+      "code": "nd",
+      "name": "North Dakota"
+    },
+    {
+      "code": "sd",
+      "name": "South Dakota"
+    },
+    {
+      "code": "nm",
+      "name": "New Mexico"
+    },
+    {
+      "code": "mt",
+      "name": "Montana"
+    },
+    {
+      "code": "wv",
+      "name": "West Virginia"
+    },
+    {
+      "code": "ia",
+      "name": "Iowa"
+    },
+    {
+      "code": "nh",
+      "name": "New Hampshire"
+    },
+    {
+      "code": "pr",
+      "name": "Puerto Rico"
+    },
+    {
+      "code": "ar",
+      "name": "Arkansas"
+    },
+    {
+      "code": "wy",
+      "name": "Wyoming"
+    }
+  ],
+  "footerTaglineBlog": "Professional Roofing Services Pflugerville TX services you can trust in Pflugerville."
+}
